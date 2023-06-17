@@ -1,7 +1,8 @@
 import tkinter as tk
-
+from tkinter import filedialog
 import pandas as pd
 from openpyxl.reader.excel import load_workbook
+
 def doZoom(xls_file_path, output_file_path):
     data_frame = pd.read_excel(xls_file_path)
     duration = data_frame['Тривалість']
@@ -31,6 +32,7 @@ def doZoom(xls_file_path, output_file_path):
 
     output_wb.save(output_file_path)
     print("Success")
+
 def doMoodle(xls_file_path, output_file_path):
     data_frame = pd.read_excel(xls_file_path)
     Grades = data_frame['Загальне за курс (Бали)']
@@ -62,50 +64,21 @@ def doMoodle(xls_file_path, output_file_path):
 
     output_wb.save(output_file_path)
     print("Success")
-def button_click():
-    input1_text = input1.get()
-    input2_text = input2.get()
-    if "Zoom" in input1_text:
-        doZoom(input1_text, input2_text)
-    if "Moodle" in input1_text:
-        doMoodle(input1_text, input2_text)
 
-def clear_input(entry):
-    entry.delete(0, tk.END)
+def button_click():
+    input_file_path = filedialog.askopenfilename(title="Select input file")
+    output_file_path = filedialog.asksaveasfilename(title="Select output file")
+
+    if input_file_path and output_file_path:
+        if "Zoom" in input_file_path:
+            doZoom(input_file_path, output_file_path)
+        if "Moodle" in input_file_path:
+            doMoodle(input_file_path, output_file_path)
 
 root = tk.Tk()
 root.title("Fill table")
 
-# Create labels
-label1 = tk.Label(root, text="Path to excel file:")
-label1.grid(row=0, column=0, sticky=tk.E)
-
-# Create input field and clear button
-input1 = tk.Entry(root)
-input1.grid(row=0, column=1)
-
-clear_button1 = tk.Button(root, text="Clear",  command=lambda: clear_input(input1))
-clear_button1.grid(row=0, column=2)
-
-label2 = tk.Label(root, text="Path to result file:")
-label2.grid(row=1, column=0, sticky=tk.E)
-
-# Create input field and clear button
-input2 = tk.Entry(root)
-input2.grid(row=1, column=1)
-
-clear_button2 = tk.Button(root, text="Clear", command=lambda: clear_input(input2))
-clear_button2.grid(row=1, column=2)
-
-# Create button
 button = tk.Button(root, text="Submit", command=button_click)
-button.grid(row=2, columnspan=3)
-
-# Center-align the widgets
-root.grid_rowconfigure(0, weight=1)
-root.grid_rowconfigure(1, weight=1)
-root.grid_columnconfigure(0, weight=1)
-root.grid_columnconfigure(1, weight=1)
-root.grid_columnconfigure(2, weight=1)
+button.pack(pady=20)
 
 root.mainloop()
