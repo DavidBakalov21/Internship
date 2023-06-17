@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import pandas as pd
 from openpyxl.reader.excel import load_workbook
 
@@ -65,10 +65,29 @@ def doMoodle(xls_file_path, output_file_path):
     output_wb.save(output_file_path)
     print("Success")
 
-def button_click():
-    input_file_path = filedialog.askopenfilename(title="Select input file")
-    output_file_path = filedialog.asksaveasfilename(title="Select output file")
+def select_input_file():
+    global input_file_path
+    input_file_path = filedialog.askopenfilename(title="Select input file",
+                                                 filetypes=(("Excel files", "*.xls *.xlsx"),("All files", "*.*")))
+    if input_file_path:
+        if not (input_file_path.endswith(".xls") or input_file_path.endswith(".xlsx")):
+            messagebox.showerror("Error", "Input file must be a .xls or .xlsx file!")
+            input_file_path = ""
+        else:
+            input_file_label['text'] = input_file_path
 
+def select_output_file():
+    global output_file_path
+    output_file_path = filedialog.asksaveasfilename(title="Select output file", defaultextension=".xls",
+                                                    filetypes=(("Excel files", "*.xls *.xlsx"),("All files", "*.*")))
+    if output_file_path:
+        if not (output_file_path.endswith(".xls") or output_file_path.endswith(".xlsx")):
+            messagebox.showerror("Error", "Output file must be a .xls or .xlsx file!")
+            output_file_path = ""
+        else:
+            output_file_label['text'] = output_file_path
+
+def process_files():
     if input_file_path and output_file_path:
         if "Zoom" in input_file_path:
             doZoom(input_file_path, output_file_path)
@@ -76,9 +95,27 @@ def button_click():
             doMoodle(input_file_path, output_file_path)
 
 root = tk.Tk()
-root.title("Fill table")
+root.title("KSE Automatization")
 
-button = tk.Button(root, text="Submit", command=button_click)
-button.pack(pady=20)
+title_label = tk.Label(root, text="KSE Automatization", font=('Verdana', 18, 'bold'))
+title_label.pack(pady=10)
+
+explanation_label = tk.Label(root, text="This program helps you systematize tables.", font=('Verdana', 12))
+explanation_label.pack(pady=10)
+
+input_file_button = tk.Button(root, text="Select Input File", command=select_input_file, font=('Verdana', 14), padx=20, pady=10)
+input_file_button.pack()
+
+input_file_label = tk.Label(root, text="", font=('Verdana', 10))
+input_file_label.pack(pady=10)
+
+output_file_button = tk.Button(root, text="Select Output File", command=select_output_file, font=('Verdana', 14), padx=20, pady=10)
+output_file_button.pack()
+
+output_file_label = tk.Label(root, text="", font=('Verdana', 10))
+output_file_label.pack(pady=10)
+
+process_button = tk.Button(root, text="Process Files", command=process_files, font=('Verdana', 14), padx=20, pady=10)
+process_button.pack()
 
 root.mainloop()
